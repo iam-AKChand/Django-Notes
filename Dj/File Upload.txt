@@ -1,0 +1,73 @@
+Step-1 :  UploadFile ----> WebApp
+Step-2 :  changes in settings.py    and add templates
+'''''''''''''   
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR=os.path.join(BASE_DIR,'templates')
+STATIC_DIR=os.path.join(BASE_DIR,'static')
+MEDIA_ROOT=os.path.join(BASE_DIR,'media')
+
+INSTALLED_APPS = [
+	'WebApp'
+]
+        'DIRS': [TEMPLATE_DIR,],
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS=[
+    STATIC_DIR,
+]
+MEDIA_URL='/media/'
+
+Step-3 :  simple.html
+'''''''''''''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Working with Django File Upload</title>
+</head>
+<body>
+<form method="POST" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    <input type="file" name="myfile"><br>
+    <button type="submit">Upload</button>
+</form>
+{% if uploaded_file_url %}
+<p>File Uploaded at :<a href="{{uploaded_file_url}}">{{uploaded_file_url}}</a></p>
+{% endif %}
+</body>
+</html>
+
+Step-4 :   views.py
+''''''''''''''
+from django.shortcuts import render
+from django.core.files.storage import FileSystemStorage
+
+# Create your views here.
+def Simple_Upload(request):
+    if request.method=="POST" and request.FILES['myfile']:
+        myfile=request.FILES['myfile']
+        print(myfile.name)
+        print(myfile.size)
+        fs=FileSystemStorage()
+        filename=fs.save(myfile.name,myfile)
+        uploaded_file_url=fs.url(filename)
+        return render(request,'MyApp/simple.html',{'uploaded_file_url':uploaded_file_url})
+    return render(request,'MyApp/simple.html')
+
+Step-5 :   urls.py
+'''''''''''''
+from django.contrib import admin
+from django.urls import path
+from django.conf import settings
+from django.conf.urls.static import static
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('simple/', views.Simple_Upload),
+]
+if settings.DEBUG:
+    urlpatterns+=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
+    urlpatterns+=static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+

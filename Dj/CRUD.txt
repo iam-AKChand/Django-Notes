@@ -1,0 +1,288 @@
+Step-1 :  CRUD_Project ---> WebApp
+Step-2 :  settings.py
+''''''''''''''''''''''''''''''''''''
+import os
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR=os.path.join(BASE_DIR,'templates')
+STATIC_DIR=os.path.join(BASE_DIR,'static')
+MEDIA_ROOT=os.path.join(BASE_DIR,'media')
+
+INSTALLED_APPS = [
+    'WebApp',
+]
+
+        'DIRS': [TEMPLATE_DIR,],
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS=[
+    STATIC_DIR,
+]
+MEDIA_URL='/media/'
+
+Step-3 :   models.py
+'''''''''''''''
+from django.db import models
+from django.urls import reverse
+# Create your models here.
+class Company(models.Model):
+    company_name=models.CharField(max_length=30)
+    company_logo=models.FileField(null='True',blank='True')
+    company_city=models.CharField(max_length=30)
+
+Step-4 :  
+	py manage.py makemigrations
+	py manage.py migrate
+	py manage.py createsuperuser
+	py manage.py runserver
+
+Step -5 :  admin.py
+'''''''''''''''
+from django.contrib import admin
+from WebApp.models import Company
+
+# Register your models here.
+admin.site.register(Company)
+
+Step-6 :  WebApp ----> forms.py
+''''''''''''''''
+from .models import Company
+from django import forms
+
+class Newform(forms.ModelForm):
+    class Meta:
+        model=Company
+        fields=[
+            'company_name',
+            'company_logo',
+            'company_city'
+        ]
+Step-7 :  templates ---> home.html
+''''''''''''''
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Home</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-md-offset-3 col-md-6">
+    <div class="page-header">
+        <h1><a href="{% url 'home' %}" class="top-menu">IT Companies List</a></h1>
+    </div>
+    <a href="/create/" class="top-menu"><span class="glyphicon glyphicom-plus"></span><button class="btn btn-primary">Add New Pic</button></a><br>
+    <ul>
+        {% for obj in orglist %}
+        <a href="{{ obj.get_absolute_url }}"><h3>{{ obj.id }}.{{ obj.company_name }}</h3>
+            {% if obj.company_logo %}<img src='{{ obj.company_logo.url }}'><br><h3>{{ obj.company_city }}</h3>
+            {% endif %}
+        </a>
+        <a href="{% url 'update' id=obj.id %}"><button class="btn btn-success">Update</button></a>
+        <a href="{% url 'delete' id=obj.id %}"><button class="btn btn-danger">Delete</button></a>
+        {% endfor %}
+    </ul>
+</div>
+</body>
+</html>
+
+Step-8 :  create.html
+''''''''''''''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>CREATE DATA</title>
+</head>
+<body>
+<form method="POST" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save">
+</form>
+</body>
+</html>
+
+Step-9 :  views.py
+'''''''''''''
+from django.shortcuts import render,get_object_or_404
+from django.http import HttpResponse,HttpResponseRedirect
+from .models import Company
+from .forms import Newform
+
+# Create your views here.
+
+def home(request):
+    orglist=Company.objects.all()
+    return render(request,'MyApp/home.html',{'orglist':orglist})
+
+def org_create(request):
+    form=Newform(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        instance=form.save()
+        instance.save()
+        return HttpResponseRedirect('/')
+    context={'form':form}
+    return render(request,'MyApp/create.html',context)
+
+Step-10 :  urls.py
+'''''''''''''''
+from django.contrib import admin
+from django.urls import path,include
+from WebApp import views
+from django.conf import settings
+from django.conf.urls.static import static
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('', views.home,name='home'),
+    path('create/', views.org_create),
+]
+if settings.DEBUG:
+    urlpatterns+=static(settings.STATIC_URL,document_root=settings.STATIC_ROOT)
+    urlpatterns+=static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+RETRIVE
+===============
+Step-1 :  retrive.html
+''''''''''''
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Retrive</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+</head>
+<body>
+<div class="col-md-offset-3 col-md-6">
+    <div class="page-header">
+        <h1><a href="{% url 'home' %}" class="top-menu">IT Companies in Overseas</a></h1>
+    </div>
+    <h3><u>{{ instance.company_name }}details</u></h3>
+    <h4>Compny id :{{ instance.id }}</h4><br>
+    <h4>Company image :<img src="{{ instance.company_logo.url }}"/></h4><br>
+    <h4>Compny City :{{ instance.company_city }}</h4><br>
+</div>
+</body>
+</html>
+
+Step-2 :   views.py
+'''''''''''''
+def home(request):
+    orglist=Company.objects.all()
+    return render(request,'MyApp/home.html',{'orglist':orglist})
+
+def org_create(request):
+    form=Newform(request.POST or None, request.FILES or None)
+    if form.is_valid():
+        instance=form.save()
+        instance.save()
+        return HttpResponseRedirect('/')
+    context={'form':form}
+    return render(request,'MyApp/create.html',context)
+
+def org_retrive(request,id=None):
+    instance=get_object_or_404(Company,id=id)
+    context={'instance':instance}
+    return render(request,'MyApp/retrive.html',context)
+
+Step-3 :   urls.py
+'''''''''''''  
+    path('retrive/<int:id>',views.org_retrive,name='retrive'),
+   
+
+go to webserver and type    http://127.0.0.1:8000/retrive/5
+
+UPDATE
+===========
+Step-1 :   models.py       [ After adding lines ]
+'''''''''''''
+from django.db import models
+from django.urls import reverse
+# Create your models here.
+class Company(models.Model):
+    company_name=models.CharField(max_length=30)
+    company_logo=models.FileField(null='True',blank='True')
+    company_city=models.CharField(max_length=30)
+    def __str__(self):
+        return self.company_name
+    def get_absolute_url(self):
+        return reverse('retrive', kwargs={"id": self.id})
+
+Step-2 :    home.html
+'''''''''''''''
+        <a href="{% url'update' id=obj.id %}">Update</a>
+
+Step-3 :   update.html      [ copy create.html ]
+''''''''''''''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>UPDATE DATA</title>
+</head>
+<body>
+<form method="POST" action="" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save">
+</form>
+</body>
+</html>
+
+Step-4 :   views.py
+''''''''''''''
+def org_update(request,id=None):
+    instance=get_object_or_404(Company,id=id)
+    form=Newform(request.POST or None,request.FILES or None,instance=instance)
+    if form.is_valid():
+        instance = form.save()
+        instance.save()
+        return HttpResponseRedirect(instance.get_absolute_url())
+    context = {'instance': instance, 'form': form}
+    return render(request, "MyApp/update.html", context)
+
+Step-5 :   urls.py
+''''''''''''''
+    path('update/<int:id>', views.org_update,name='update'),
+
+
+go to webserver and type    http://127.0.0.1:8000/update/6
+
+DELETE
+====================
+Step-1 :    delete.html
+''''''''''''''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+         <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+        </head>
+<body>
+<div class="col-md-offset-3 col-md-6">
+    Data Deleted Successfully......
+    click here to see <a href="{% url 'home' %}"><h3>Companies List</h3></a>
+</div>
+</body>
+</html>
+
+Step-2 :   home.html
+'''''''''''''
+        <a href="{% url'delete' id=obj.id %}">Delete</a>
+
+Step-3 :   views.py
+'''''''''''''
+def org_delete(request,id=None):
+	instance =get_object_or_404(Company,id=id)
+	instance.delete()
+	return render(request,"MyApp/delete.html")
+
+STEP4:  urls.py
+'''''''''''''
+path('delete/<int:id>',views.org_delete,name='delete'),
+
+
+go to webserver and type    http://127.0.0.1:8000/update/6

@@ -1,0 +1,125 @@
+Template  Filter  :
+=======================
+..........................................................Step - 1..................................................................
+
+Step -1 : Create  Project named;
+''''''''''''''''''
+Template_Filter ----> WebApp
+
+Step -2 :
+'''''''''''''''''
+made required changes in settings.py , add templates and static. Inside templates create 3 html files and inside static create images, css.
+
+Step -3:	(models.py)
+'''''''''''''''''
+from django.db import models
+
+# Create your models here.
+class FilterModel(models.Model):
+    name=models.CharField(max_length=30)
+    subject=models.CharField(max_length=20)
+    dept=models.CharField(max_length=20)
+    date=models.DateField()
+
+Step -4:     
+'''''''''''''''''
+py manage.py makemigrations
+py manage.py migrate
+
+Step -5:    (Admin.py)
+''''''''''''''' 
+from django.contrib import admin
+from WebApp.models import FilterModel
+
+# Register your models here.
+class FilterModelAdmin(admin.ModelAdmin):
+    list_display=['name','subject','dept','date']
+admin.site.register(FilterModel,FilterModelAdmin)
+
+Step -6:
+''''''''''''''''
+py manage.py createsuperuser
+py manage.py runserver    and  run in server 127.0.0.1:8000/admin  . inputb data manually and run dt.
+
+Step-7:     (views.py)
+'''''''''''''''
+from django.shortcuts import render
+from WebApp.models import FilterModel
+
+# Create your views here.
+def DataView(request):
+    datalist=FilterModel.objects.all()
+    return render(request,'MyApp/Welcome.html',{'datalist':datalist})
+
+Step -8:	(Welcome.html)	
+'''''''''''''''''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Template Filter</title>
+</head>
+<body>
+{% for item in datalist %}
+<ul>
+    <li>{{item.name}}</li>
+    <li>{{item.subject}}</li>
+    <li>{{item.dept}}</li>
+    <li>{{item.date}}</li>
+</ul><hr>
+{% endfor %}
+</body>
+</html>
+
+Step -9:	(urls.py)
+'''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('datalist/', views.DataView),
+]
+
+..........................................Step - 2............................................................................
+
+Django Customized Template Filter
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+1. WebApp --> create a folder 'templatetags'  
+2. create a file named '__init__.py' to make that templatetags folder into package.
+3. create a python file inside that 'templatetags' and named that 'cust_filter.py'. (any name you can give to that file)
+
+cust_filter.py
+'''''''''''''''''''''''''''''
+from django import template
+register=template.Library()
+
+def truncate5(value,n):
+    #custom filter
+    result=value[0:n]
+    return result
+register.filter('t_n',truncate5)
+
+Welcome.html
+'''''''''''''''''''''''''''''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Template Filter</title>
+</head>
+<body>
+{% load cust_filter %}
+{% for item in datalist %}
+<ul>
+    <li>{{item.name|t_n:2}}</li>
+    <li>{{item.subject|t_n:3}}</li>
+    <li>{{item.dept|t_n:2}}</li>
+    <li>{{item.date|date}}</li>
+</ul><hr>
+{% endfor %}
+</body>
+</html>
+
+run the server by refreshing again 127.0.0.1:8000/datalist/

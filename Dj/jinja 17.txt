@@ -1,0 +1,143 @@
+create your project "Jinja_DTL"
+goto settins.py change required settings
+TEMPLATE_DIR=os.path.join(BASE_DIR,'templates')
+STATIC_DIR=os.path.join(BASE_DIR,'static')
+
+INSTALLED_APPS = [
+    'WebApp'
+]
+
+TEMPLATES = [
+        'DIRS': [TEMPLATE_DIR,],
+]
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS=[
+    STATIC_DIR,
+]
+
+
+create 'static' inside 'css'->'MyFile.css' and 'images'
+'template' inside 'MyFile'->'Welcome.html'  inside root 
+
+Welcome.html
+''''''''''''''''''''''''''
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Template Language</title>
+    <link rel="stylesheet" href="{% static '/css/MyFile.css' %}">
+</head>
+<body>
+<h1>Employee List is..!!</h1>
+{% if elist %}
+<table border="1px">
+    <thead>
+    <th>EMP ID</th>
+    <th>EMP NAME</th>
+    <th>EMP SAL</th>
+    <th>EMP ADD</th>
+    </thead>
+    {% for emp in elist %}
+    <tr>
+        <td>{{emp.EmpId}}</td>
+        <td>{{emp.EmpName}}</td>
+        <td>{{emp.EmpSal}}</td>
+        <td>{{emp.EmpAdd}}</td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<h2>Sorry No records Found...!!</h2>
+{% endif %}
+</body>
+</html>
+
+go to 'models.py'
+''''''''''''''''''''''''''''''
+from django.db import models
+
+# Create your models here.
+class Emp(models.Model):
+    EmpId=models.IntegerField()
+    EmpName=models.CharField(max_length=30)
+    EmpSal=models.IntegerField()
+    EmpAdd=models.CharField(max_length=30)
+
+===E:\DjangoProjects\Jinja_DTL>py manage.py shell
+
+===E:\DjangoProjects\Jinja_DTL>py mange.py makemigrations
+
+===E:\DjangoProjects\Jinja_DTL>py manage.py migrate
+
+===E:\DjangoProjects\Jinja_DTL>py manage.py createsuperuser
+
+===E:\DjangoProjects\Jinja_DTL>py manage.py runserver
+
+http://127.0.0.1:8000/admin/
+
+admin.py
+'''''''''''''''''''
+from django.contrib import admin
+from Webapp.models import Emp
+
+# Register your models here.
+class EmpAdmin(admin.ModelAdmin):
+    list_display=['EmpId','EmpName','EmpSal','EmpAdd']
+
+admin.site.register(Emp,EmpAdmin)
+
+http://127.0.0.1:8000/admin/   refresh and add in Emp
+
+Myfile.css
+''''''''''''''''''
+body{
+background-image:url
+background-repeat:no-repeat;
+background-size:cover;
+}
+table{
+margin:auto;background:yellow;
+}
+
+views.py
+''''''''''''''''''
+from django.shortcuts import render
+from WebApp.models import Emp
+from django.http import HttpResponse
+
+# Create your views here.
+def Emp_View(request):
+    EmpList=Emp.objects.all()
+    My_Dict={'elist':EmpList}
+    return render(request,'MyFile/Welcome.html',My_Dict)
+
+urls.py
+''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('eDetails/',views.Emp_View),
+]
+
+http://127.0.0.1:8000/eDetails/   
+
+
+
+
+
+mysql> create databse eindia;
+mysql> use eindia;
+Dtabase cahnged
+mysql> connect eindia;
+
+mysql> show tables;
+
+mysql> select * from Webapp_Emp;
+Empty set
+mysql> desc Webapp_Emp;

@@ -1,0 +1,239 @@
+Creating a Django Model using  sqlite3 database
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Step - 1 :    Create a Project named "ModelProject" nd inside that palce "WebApp" 
+'''''''''''''''''
+E:\DjangoProjects>django-admin startproject ModelProject
+E:\DjangoProjects>cd ModelProject
+E:\DjangoProjects>django-admin startapp WebApp
+E:\DjangoProjects\ModelProject>py manage.py runserver
+
+Django version 2.2.2, using settings 'ModelProject.settings'
+Starting development server at http://127.0.0.1:8000/
+
+Step - 2 :     Goto settings.py and make changes in ........
+''''''''''''''''
+INSTALLED_APPS = [
+       'WebApp'
+]
+
+Step - 3 :    Go to "models.py"
+''''''''''''''''''
+from django.db import models
+# Create your models here.
+class Student(models.Model):
+    StdId=models.IntegerField()
+    StdName=models.CharField(max_length=25)
+    StdClass=models.IntegerField()
+    StdStream=models.CharField(max_length=10)
+    StdAdd=models.CharField(max_length=20)
+    StdMark=models.IntegerField()
+
+Step - 4 :
+'''''''''''''''''
+E:\DjangoProjects\ModelProject>py manage.py shell
+>>> from django.db import connection
+>>> d=connection.cursor()
+>>> print(d)
+<django.db.backends.utils.CursorDebugWrapper object at 0x00000222D67A3710>
+>>> exit()
+
+Step - 5 :  create a file inside migrations  (sql code will be generated)
+'''''''''''''''''
+E:\DjangoProjects\ModelProject>py manage.py makemigrations
+Migrations for 'WebApp':
+  WebApp\migrations\0001_initial.py
+    - Create model Student
+
+Step - 6 :   (to see the generated sql code)
+'''''''''''''''''''
+E:\DjangoProjects\ModelProject>py manage.py sqlmigrate WebApp 0001
+BEGIN;
+--
+-- Create model Student
+--
+CREATE TABLE "WebApp_student" ("id" integer NOT NULL PRIMARY KEY AUTOINCREMENT, "StdId" integer NOT NULL, "StdName" varchar(25) NOT NULL, "StdClass" integer NOT NULL, "StdStream" varchar(10) NOT NULL, "StdAdd" varchar(20) NOT NULL, "StdMark" integer NOT NULL);
+COMMIT;
+
+Step - 7 :    (sql code will be executed) 
+''''''''''''''''
+ E:\DjangoProjects\ModelProject>py manage.py migrate
+Operations to perform:
+  Apply all migrations: WebApp, admin, auth, contenttypes, sessions
+Running migrations:
+  Applying WebApp.0001_initial... OK
+  Applying contenttypes.0001_initial... OK
+  Applying auth.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying sessions.0001_initial... OK
+
+Step - 8 :
+''''''''''''''''
+E:\DjangoProjects\ModelProject>py manage.py runserver
+Django version 2.2.2, using settings 'ModelProject.settings'
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
+
+Go to Web Browser and search for  "http://127.0.0.1:8000/admin/"
+
+Step - 9:
+'''''''''''''''''
+E:\DjangoProjects\ModelProject>py manage.py createsuperuser
+Username (leave blank to use 'hp'): akash
+Email address: akash@gmail.com
+Password:
+Password (again):
+Superuser created successfully.
+
+Step - 10 :
+'''''''''''''''''
+E:\DjangoProjects\ModelProject>py manage.py runserver
+Django version 2.2.2, using settings 'ModelProject.settings'
+Starting development server at http://127.0.0.1:8000/
+
+Go to Web Browser and search for  "http://127.0.0.1:8000/admin/"
+After refreshing go inside that and put the username and password 
+
+Step - 11 :    Add this in   "admin.py"
+''''''''''''''''''
+from django.contrib import admin
+from WebApp.models import Student
+
+class StudentAdmin(admin.ModelAdmin):
+    list_display=['StdId','StdName','StdClass','StdStream','StdAdd','StdMark']
+
+# Register your models here.
+admin.site.register(Student,StudentAdmin)
+
+Go to Web Browser and search for  "http://127.0.0.1:8000/admin/"
+After entering inside refresh again
+
+Step - 11 :    Add this in   "admin.py"
+''''''''''''''''''
+We can also add  "id" here.....
+ list_display=['id','StdId','StdName','StdClass','StdStream','StdAdd','StdMark']
+
+and again refresh in that
+http://127.0.0.1:8000/admin/
+
+=====================================================
+Creating a Django Model using  MySql database
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Step - 1 :    Create a Project named "EmpModel" nd inside that palce "ModelApp" 
+'''''''''''''''''
+E:\DjangoProjects>django-admin startproject EmpModel
+E:\DjangoProjects>cd EmpModel
+E:\DjangoProjects>django-admin startapp ModelApp
+E:\DjangoProjects\EmpModel>py manage.py runserver
+
+Django version 2.2.2, using settings 'EmpModel.settings'
+Starting development server at http://127.0.0.1:8000/
+
+Step - 2  go to mysql command  (to connect to database nd create db)
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+mysql> create database akashdb8;
+Query OK, 1 row affected (0.00sec)
+mysql> show databases;
+
+...........or.......... we can check in above and below also
+
+mysql> use akashdb8;
+Database changed
+mysql>connect akashdb;
+Connection id:  18
+Current database: akashdb8
+
+mysql> create table,insert data,update....
+
+Step - 3 :     Goto settings.py and make changes in ........
+''''''''''''''''
+INSTALLED_APPS = [
+       'ModelApp'
+]
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'akashdb8',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST':'localhost',
+        'PORT':3306
+    }
+}
+
+Step - 4   run in cmd
+''''''''''''''''''''''''''''''''''''
+E:\DjangoProjects\EmpModel>py manage.py shell
+>>> from django.db import connection
+>>> c=connection.cursor()
+>>> print(c)
+<django.db.backends.utils.CursorDebugWrapper object at 0x000001B8671A91D0>
+>>> exit()
+
+Step - 5 :  model.py
+'''''''''''''''''''''''''''''''''
+from django.db import models
+
+# Create your models here.
+class Employee(models.Model):
+    EmpId=models.IntegerField()
+    EmpName=models.CharField(max_length=30)
+    EmpSal=models.FloatField()
+    EmpAdd=models.CharField(max_length=30)
+
+Step - 6 :
+''''''''''''''''''''''''''''''''
+E:\DjangoProjects\EmpModel>py manage.py makemigrations
+Migrations for 'ModelApp':
+  ModelApp\migrations\0001_initial.py
+    - Create model Employee
+
+just run this line in the mysql cmd................
+
+mysql> select * from ModelApp_Employee;
+Error msg will come :  'akashdb8.ModelApp_Employee' doesn't exist
+
+Step - 7
+''''''''''''''''
+E:\DjangoProjects\EmpModel>py manage.py migrate
+
+just again run this line in the mysql cmd................
+
+mysql> select * from ModelApp_Employee;
+Empty set (0.00sec)
+mysql> desc ModelApp_Employee;
+now a Table will show 
+
+Step - 8
+''''''''''''''''
+E:\DjangoProjects\EmpModel>py manage.py createsuperuser
+Username (leave blank to use 'hp'): akash
+Email address: akash@gmail.com
+Password:
+Password (again):
+Superuser created successfully.
+
+Step - 9  admin.py
+''''''''''''''''
+from django.contrib import admin
+from ModelApp.models import Employee
+
+# Register your models here.
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display=['id','EmpId','EmpName','EmpSal','EmpAdd']
+
+admin.site.register(Employee,EmployeeAdmin)
+
+Step - 10
+'''''''''''''''''
+E:\DjangoProjects\EmpModel>py manage.py runserver
+
+Now log in into 127.0.01:8000/admin
+using user name=akash and password=root
+ you will find Employee table there.
+ Now made some edit in "Add Employee"
+
+just again run this line in the mysql cmd................
+mysql> select * from ModelApp_Employee;
+you will find ur new created table now

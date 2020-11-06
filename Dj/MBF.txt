@@ -1,0 +1,134 @@
+Model Based Form (MBF)
+=============================
+Step-1  :   Create project and app inside that : > MBF ---- > WebApp
+''''''''''''''''''''
+Step-2  :  do all required changes in settins.py , templates, static.
+''''''''''''''''''''
+Step-3  :  models.py
+'''''''''''''''   ''''''''''''''''''''''
+from django.db import models
+# Create your models here.
+class Emp(models.Model):
+    Name=models.CharField(max_length=20)
+    Salary=models.IntegerField()
+
+Step-4  :  (do required migrations)
+''''''''''''''''   '''''''''''''''''''''''''''''''''''''''''''''''''''
+py manage.py makemigrations
+py manage.py sqlmigrate WebApp 0001
+py manage.py migrate
+
+py manage.py runserver  127.0.0.1:8000/admin/
+
+Step-5  :  py manage.py createsuperuser
+'''''''''''''''
+Step-6  :   (admin.py)
+''''''''''''''''
+from django.contrib import admin
+from WebApp.models import Emp
+
+# Register your models here.
+class EmpAdmin(admin.ModelAdmin):
+    list_display = ['id','Name','Salary']
+
+#Register your models here
+admin.site.register(Emp,EmpAdmin)
+
+Step-7  :    again refresh py manage.py runserver  127.0.0.1:8000/admin/
+''''''''''''''''
+Step-8  :  forms.py  in WebApp
+'''''''''''''''
+from django import forms
+from WebApp.models import Emp
+
+#fields with validations
+class EmpForm(forms.ModelForm):
+    class Meta:
+        model=Emp
+        fields="__all__"
+
+Step-9  :    views.py
+'''''''''''''''''
+from django.shortcuts import render
+from WebApp import forms
+from django.http import HttpResponseRedirect
+
+# Create your views here.
+def ThankView(request):
+    return render(request,'MyApp/Thanks.html')
+
+def EmpView(request):
+    form=forms.EmpForm()
+    if request.method=="POST":
+        form=forms.EmpForm(request.POST)
+        if form.is_valid():
+            form.save(commit=True)
+            return HttpResponseRedirect('/bye')
+    else:
+        form=forms.EmpForm()
+    return render(request,'MyApp/Welcome.html',{'form':form})
+
+Step-10  :   Welcome.html
+'''''''''''''''''''
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Model Based Forms</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/MyFile.css' %}">
+</head>
+<body>
+<h1 align="center">MBF General Form</h1>
+<div class="container" align="center">
+    <form method="post">
+        {{ form.as_p }}
+        {% csrf_token %}
+        <input type="submit" value="Login" class="btn btn-primary">
+    </form>
+</div>
+</body>
+</html>
+
+Step-11  :  Thanks.html
+'''''''''''''''''''
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanks for Click</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/MyFile.css' %}">
+</head>
+<body>
+<h2 align="center">Thanks for filling all requirsd fields</h2>
+<h2 align="center">Good Bye all</h2>
+</body>
+</html>
+
+Step-12   :  MyFile.css
+'''''''''''''''
+body{
+background-image:url("/static/images/tech1.jpg");
+}
+
+h1{
+text-align:center;
+color:red;
+font-size:50px;
+font-family:algerian;
+}
+
+Step-13  :  urls.py
+'''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('login/', views.EmpView),
+    path('bye/', views.ThankView),
+]

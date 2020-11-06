@@ -1,0 +1,114 @@
+Template  Inheritance
+==========================
+Step-1 :  Create a Project named:
+''''''''''''''''
+ Advanced_Temp_Inher ----> WebApp
+
+Step-2 :  do required settings.py, templates,static  
+''''''''''''''''''
+create inside  template ----> base.html, home.html, courses.html, academics.html, news.html, contact.html
+
+Step-3 :  base.html
+'''''''''''''''''''''''''''''''''''''''''
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Advanced Template Inheritance</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Django NareshIT</a>
+    </div>
+      <ul class="nav navbar-nav">
+        <li><a href="/home">Home</a></li>
+        <li><a href="/courses">Courses</a></li>
+        <li><a href="/acad">Academics</a></li>
+        <li><a href="/news">News</a></li>
+        <li><a href="/cont">Contact</a></li>
+      </ul>
+  </div>
+</nav>
+{% block body_block %}
+{% endblock %}
+</body>
+</html>
+
+Step-4 : home.html
+''''''''''''''''''''''''''''''''''''''''
+<!DOCTYPE html>
+{% extends 'MyApp/base.html' %}
+{% block body_block %}
+<h1>Welcome to all to Home page of Naresh I Technologies.</h1>
+{% endblock %}
+
+academics.html
+'''''''''''''''''''''''''''''''''
+<!DOCTYPE html>
+{% extends 'MyApp/base.html' %}
+{% block body_block %}
+<h1>Academics careerer is very good and excellent</h1>
+{% endblock %}
+
+courses.html
+''''''''''''''''''''''''''
+<!DOCTYPE html>
+{% extends 'MyApp/base.html' %}
+{% block body_block %}
+<h1>All types of technical courses Training are provided here</h1>
+{% endblock %}
+
+news.html
+'''''''''''''''''''''''
+<!DOCTYPE html>
+{% extends 'MyApp/base.html' %}
+{% block body_block %}
+<h1>Following the creation of a Project Plan Quality Plan is developed.</h1>
+{% endblock %}
+
+contact.html
+''''''''''''''''''''''''''''
+<!DOCTYPE html>
+{% extends 'MyApp/base.html' %}
+{% block body_block %}
+<h1>Address: 2nd Floor, Durga Bhavani Plaza,
+Ameerpet, Hyderabad  ,phone : 040-2373 4842,
+Email : info@nareshit.com</h1>
+{% endblock %}
+
+Step-5 :  views.py
+'''''''''''''''''''''''''''''''''''''''''
+from django.shortcuts import render
+
+# Create your views here.
+def Home_view(request):
+    return render(request,'MyApp/home.html')
+def Courses_view(request):
+    return render(request,'MyApp/courses.html')
+def Academics_view(request):
+    return render(request,'MyApp/academics.html')
+def News_view(request):
+    return render(request,'MyApp/news.html')
+def Contact_view(request):
+    return render(request,'MyApp/contact.html')
+
+Step-6 :  urls.py
+'''''''''''''''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('home/', views.Home_view),
+    path('acad/', views.Academics_view),
+    path('courses/', views.Courses_view),
+    path('news/', views.News_view),
+    path('cont/', views.Contact_view),
+]
+

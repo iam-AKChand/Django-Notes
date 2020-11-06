@@ -1,0 +1,160 @@
+Django  Cookies
+===================
+Step - 1  :  Django_Cookies ---> WebApp
+Step - 2  :  make changes only in settings.py   
+
+step - 3  :  models.py
+''''''''''''''''''''''''''''''''''''''''
+from django.db import models
+# Create your models here.
+class Emp(models.Model):
+    Name=models.CharField(max_length=20)
+
+--py manage.py makemigrations
+--py manage.py migrate
+
+Step - 4  :  views.py
+'''''''''''''''''''''''''''''''''''''''''
+from django.shortcuts import render
+from django.http import HttpResponse
+# Create your views here.
+def Test_Cookie(request):
+    request.session.set_test_cookie()
+    return HttpResponse("<h1>Cookies are under testing</h1>")
+
+def Check_Cookie(request):
+    if request.session.test_cookie_worked():
+        print("Say Cookies are Working fine")
+        request.session.delete_test_cookie()
+        return HttpResponse("<h1>Cookies are deleted</h1>")
+
+Step - 5  :  urls.py
+''''''''''''''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('test/', views.Test_Cookie),
+    path('check/', views.Check_Cookie),
+]
+Step - 6  :
+--py manage.py runserver
+127.0.0.1:8000/test/
+127.0.0.1:8000/check/
+
+--------------------------------------------------------------------------------
+More  Cookies  Methods
+======================================
+Step - 1  :  Cookies ---> WebApp
+Step - 2  :  make changes only in settings.py
+
+Step - 3  :  models.py
+'''''''''''''''''''''''''''''''''''''''''''
+from django.db import models
+# Create your models here.
+class Emp(models.Model):
+    Name=models.CharField(max_length=20)
+
+--py manage.py makemigrations
+--py manage.py migrate
+
+Step - 4  :  views.py
+'''''''''''''''''''''''''''''''''''''''
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+def set_Cookie(request):
+    response=HttpResponse("<h1>Hey Cookies set</h1>")
+    response.set_cookie('user','Akash')
+    return response
+def get_Cookie(request):
+    user=request.COOKIES['user']
+    return HttpResponse(user + 'Hey get Cookie Success')
+def del_Cookie(request):
+    response = HttpResponse("<h1>Cookies are deleted</h1>")
+    response.delete_cookie('user')
+    return response
+
+Step - 5 :  urls.py
+'''''''''''''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('set/', views.set_Cookie),
+    path('get/', views.get_Cookie),
+    path('del/', views.del_Cookie),
+]
+
+Step - 6  :
+--py manage.py runserver
+127.0.0.1:8000/set/
+127.0.0.1:8000/get/
+127.0.0.1:8000/del/
+
+
+=============================================
+Advanced Projects on Cookies
+=============================
+Step - 1  :  Cookie_Django ---> WebApp
+Step - 2  :  make changes only in settings.py   
+	create 'templates' folder and inside 'MyApp' ---> 'hits.html'
+
+Step - 3  :  models.py
+'''''''''''''''''''''''''''''''''''''''''''
+from django.db import models
+# Create your models here.
+class Emp(models.Model):
+    Name=models.CharField(max_length=20)
+
+--py manage.py makemigrations
+--py manage.py migrate
+
+Step - 4  :  views.py
+'''''''''''''''''''''''''''''''''''''''
+from django.shortcuts import render
+
+# Create your views here.
+def Hits_View(request):
+    hit=request.COOKIES.get('hit',0)
+    newhit=int(hit)+1
+    response=render(request,'MyApp/hits.html',{'hit':newhit})
+    response.set_cookie('hit',newhit)
+    return response
+
+Step - 5  :  hits.html
+''''''''''''''''''''''''''''''''''''''''''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Welcome to Cookies</title>
+    <style type="text/css">
+        span{
+        font-size:200px;font-family:candera;color:red;
+        }
+    </style>
+</head>
+<body>
+<h1>Web Page hits are : <span>{{hit}}</span></h1>
+</body>
+</html>
+
+Step - 6  :  urls.py
+'''''''''''''''''''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('hit/', views.Hits_View),
+]
+
+Step - 7  :
+'''''''''''''''''''''
+--py manage.py runserver
+127.0.0.1:8000/hit/

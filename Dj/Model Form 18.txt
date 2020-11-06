@@ -1,0 +1,240 @@
+Django form/ Model form
+''''''''''''''''''''''''''''''''''''''''''''''''
+Example - 1
+=============
+E:\DjangoProjects>django-admin startproject ModelForms
+E:\DjangoProjects>cd ModelForms
+E:\DjangoProjects\ModelForms>django-admin startapp WebApp
+E:\DjangoProjects\ModelForms>tree /f
+Folder PATH listing for volume AKASH
+Volume serial number is 2016-BC1C
+E:.
+¦   manage.py
+¦
++---ModelForms
+¦       settings.py
+¦       urls.py
+¦       wsgi.py
+¦       __init__.py
+¦
++---WebApp
+    ¦   admin.py
+    ¦   apps.py
+    ¦   models.py
+    ¦   tests.py
+    ¦   views.py
+    ¦   __init__.py
+    ¦
+    +---migrations
+            __init__.py
+
+E:\DjangoProjects\ModelForms>py manage.py runserver
+
+settings.py
+''''''''''''''''''
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR=os.path.join(BASE_DIR,'templates')
+STATIC_DIR=os.path.join(BASE_DIR,'static')
+
+'WebApp'
+
+'DIRS': [TEMPLATE_DIR,],
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS=[
+    STATIC_DIR,
+]
+
+Now Add 'static' and 'templates' inside root folder
+static --- css  and  images
+templates --- MyApp---Welcome.html
+
+WebApp     (create a python file 'forms.py')
+''''''''''''''''
+from django import forms
+#create user forms
+class EmpForm(forms.Form):
+    Name=forms.CharField()
+    Salary=forms.IntegerField()
+
+views.py
+'''''''''''''''
+from django.shortcuts import render
+from WebApp import forms
+
+# Create your views here.
+def EmpView(request):
+    form=forms.EmpForm()
+    return render(request,'MyApp/Welcome.html',{'form':form})
+
+Welcome.html
+'''''''''''''''''''''''''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Model Based Forms</title>
+</head>
+<body>
+{{ form }}
+</body>
+</html>
+
+urls.py
+''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('model/',views.EmpView),
+]
+
+
+Example - 2
+=============
+E:\DjangoProjects>django-admin startproject ModelForms
+E:\DjangoProjects>cd ModelForms
+E:\DjangoProjects\ModelForms>django-admin startapp WebApp
+E:\DjangoProjects\ModelForms>tree /f
+Folder PATH listing for volume AKASH
+Volume serial number is 2016-BC1C
+E:.
+¦   manage.py
+¦
++---ModelForms
+¦       settings.py
+¦       urls.py
+¦       wsgi.py
+¦       __init__.py
+¦
++---WebApp
+    ¦   admin.py
+    ¦   apps.py
+    ¦   models.py
+    ¦   tests.py
+    ¦   views.py
+    ¦   __init__.py
+    ¦
+    +---migrations
+            __init__.py
+
+E:\DjangoProjects\ModelForms>py manage.py runserver
+
+settings.py
+''''''''''''''''''
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR=os.path.join(BASE_DIR,'templates')
+STATIC_DIR=os.path.join(BASE_DIR,'static')
+
+'WebApp'
+
+'DIRS': [TEMPLATE_DIR,],
+
+STATIC_URL = '/static/'
+STATICFILES_DIRS=[
+    STATIC_DIR,
+]
+
+Now Add 'static' and 'templates' inside root folder
+static --- css  and  images
+templates --- MyApp---Welcome.html
+
+WebApp     (create a python file 'forms.py')
+''''''''''''''''
+from django import forms
+#create user forms
+class EmpForm(forms.Form):
+    Name=forms.CharField()
+    Salary=forms.IntegerField()
+
+views.py
+'''''''''''''''
+from django.shortcuts import render
+from WebApp import forms
+
+# Create your views here.
+def EmpView(request):
+    form=forms.EmpForm()
+    return render(request,'MyApp/Welcome.html',{'form':form})
+
+Welcome.html
+'''''''''''''''''''''''''
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Framework</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="{%static 'css/MyFile.css'%}" rel="stylesheet">
+</head>
+<body>
+<h1>Employee Sample Form</h1>
+<div class="container" align="center">
+<form method="post">
+    {{ form.as_p }}
+    <input type="submit" value="Submit" class="btn btn-primary">
+</form>
+</div>
+</body>
+</html>
+
+urls.py
+''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('model/',views.EmpView),
+]
+
+
+Example - 3
+'''''''''''''''''''''
+Welcome.html
+''''''''''''''''''''''''''
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Framework</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link href="{%static 'css/MyFile.css'%}" rel="stylesheet">
+
+</head>
+<body>
+<h1>Employee Sample Form</h1>
+<div class="container" align="center">
+<form method="post">
+    {{form.as_p}}
+    <input type="submit" value="Submit" class="btn btn-primary">
+    {% csrf_token %}
+</form>
+<img src="images/w10.jpg">
+</div>
+</body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,239 @@
+Authorisation and Authentication
+==================================================
+Step-1 :  Authentication_Django ---> WebApp
+Step-2 :  changes in settings.py , templates , static ,
+	templates ---> MyApp ---> base.html, home.html, customer.html, bank.html
+	static ---> css , images
+
+Step-3 :  base.html
+'''''''''''''''''''''''''''''''''''''
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Authorisation & Authentication..</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+<nav class="navbar navbar-inverse">
+  <div class="container">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">Core Banking</a>
+    </div>
+      <ul class="nav navbar-nav">
+          <li><a href="/home">Home</a></li>
+          <li><a href="/cust">Customer</a></li>
+          <li><a href="/bank">Banking</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+          <li><a href="#">Sign-In</a></li>
+          <li><a href="#">LogIn</a></li>
+          <li><a href="#">Logout</a></li>
+      </ul>
+  </div>
+</nav>
+{% block body_block %}
+{% endblock %}
+</body>
+</html>
+
+Step-4 :  home.html
+'''''''''''''''''''''''''''''''''''''''
+<!DOCTYPE html>
+{% extends 'MyApp/base.html' %}
+    {% block body_block %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Welcome to Core Banking</h1>
+            <h2>Bank Rules :</h2>
+            <ul>
+                <li>Term-1 : You should Check your account by Login</li>
+                <li>Term-2 : One time checking in a month is mendatory</li>
+                <li>Term-3 : Core Banking is the sexcure Banking Login Site</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+Step-5 :  customer.html
+''''''''''''''''''''''''''''''''''''''''''''''
+<!DOCTYPE html>
+{% extends 'MyApp/base.html' %}
+    {% block body_block %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Customer Core Banking</h1>
+            <h2>User Rules :</h2>
+            <ul>
+                <li>Term-1 : Customer should login their account in regular interval</li>
+                <li>Term-2 : No need to share User Id and their Password to others</li>
+                <li>Term-3 : Log in your account personally without fear</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+Step-6 :  bank.html
+'''''''''''''''''''''''''''''''''''''
+<!DOCTYPE html>
+{% extends 'MyApp/base.html' %}
+    {% block body_block %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Banking Login Page</h1>
+            <h2>Banking :</h2>
+            <ul>
+                <li>Term-1 : Check your account by Login</li>
+                <li>Term-2 : checking in a month is mendatory</li>
+                <li>Term-3 : Core Banking is the Banking Login Site</li>
+            </ul>
+        </div>
+    </div>
+{% endblock %}
+
+Step-7 :  views.py
+''''''''''''''''''''''''''''''''''
+from django.shortcuts import render
+
+# Create your views here.
+def Home_View(request):
+    return render(request,'MyApp/home.html')
+
+def Custm_View(request):
+    return render(request,'MyApp/customer.html')
+
+def Bank_View(request):
+    return render(request,'MyApp/bank.html')
+
+Step-8 :  urls.py
+''''''''''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('home/', views.Home_View),
+    path('cust/', views.Custm_View),
+    path('bank/', views.Bank_View),
+]
+
+Step-9 :     > py manage.py makemigrations
+'''''''''''''	> py manage.py migrate
+	> py manage.py createsuperuser
+	> py manage.py runserver
+
+Step-10 :  views.py   [ add some lines here , rest all same ]
+'''''''''''''''''''''''''''''''''''''
+from django.shortcuts import render
+from django.contrib.auth.decorators import login_required
+# Create your views here.
+def Home_View(request):
+    return render(request,'MyApp/home.html')
+@login_required
+def Custm_View(request):
+    return render(request,'MyApp/customer.html')
+
+def Bank_View(request):
+    return render(request,'MyApp/bank.html')
+
+----> error will comes when we click on customer in webserver
+
+Step - 11 :  urls.py    [ add some lines here , rest all same ]
+''''''''''''''''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+from django.urls import path,include
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('accounts/',include('django.contrib.auth.urls')),
+    path('home/', views.Home_View),
+    path('cust/', views.Custm_View),
+    path('bank/', views.Bank_View),
+]
+
+----> error will comes when we click on customer in webserver
+
+Step- 12 :   [ create a directory and html file inside  templates--> registration ---> login.html ]
+'''''''''''''''''''
+<!DOCTYPE html>
+{% extends 'MyApp/base.html' %}
+    {% block body_block %}
+    <div class="container" align="center">
+            <h1>Login to View account details</h1>
+            <form method="post">
+                {{form.as_p}}
+                {%csrf_token%}
+                <button type="submit" class="btn btn-primary">Login</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+Send the request to WebServer...!!!!
+Enter UserName : hello
+Enter Password : goodbye123
+
+Step-13 :   [ go to base.html ]
+''''''''''''''''''
+	<li><a href="/accounts/login">LogIn</a></li>
+
+Refresh the server .  click on "Login"
+If you enter the following credentials ;
+Enter UserName : hello
+Enter Password : goodbye123
+Click on Login Link, it displays the error msg....!!!
+
+Page not found (404)
+Request Method :    GET
+Request URL :    http://127.0.0.1:8000/accounts/profile/
+
+Step-14 :
+To avoid that error go to settings.py file under STATIC_URL, configure the following address,
+  LOGIN_REDIRECT_URL='/home'  -------> it redirects to Home Page
+
+Step-15:     [ logout.html ]
+''''''''''''''''''
+	<li><a href="/accounts/logout">Logout</a></li>
+Refresh the server . Click on Logout , by default it redirects to --------->
+Django Adminstration
+Home Page, Logged out
+Thanks for spending som quality time witha website today
+
+Step-16:
+To avoid the above msg , 
+goto settings.py file and configure the following address
+LOGIN_REDIRECT_URL='/logout'  -------> it redirects to Home Page
+
+Step-17:    [ create  templates---> MyApp---> logout.html ]
+''''''''''''''''''
+<!DOCTYPE html>
+{% extends 'MyApp/base.html' %}
+    {% block body_block %}
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Thanks for visit Banking App...!!</h1>
+            <h2>Please Login again</h2>
+            <a href="/accounts/login" class="btn btn-danger">Login</a>
+        </div>
+    </div>
+{% endblock %}
+
+Step-18:   views.py
+'''''''''''''''''''
+def Logout_View(request):
+    return render(request,'MyApp/logout.html')
+
+Step-19:   urls.py      add this following
+''''''''''''''''
+urlpatterns = [
+    path('logout/',views.Logout_View),
+]
+Step-20:
+''''''''''''''''''
+Goto settings.py 
+LOGOUT_REDIRECT_URL='/logout'

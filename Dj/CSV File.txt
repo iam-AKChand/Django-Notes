@@ -1,0 +1,30 @@
+CSV FILE UPLOAD
+===================
+Step - 1 :    CSVProjects ----> WebApp
+Step - 2 :  do changes in settings.py file
+Step - 3 :   views.py
+''''''''''''''
+from django.shortcuts import render
+from django.http import HttpResponse
+import csv
+
+# Create your views here.
+
+def getfile(request):
+    response=HttpResponse(cotent_type='text/csv')
+    response['Content_Disposition']='attachment;filename="BigData.csv"'
+    writer=csv.writer(response)
+    writer.writerow(['101','Ravi','Anna','S/W'])
+    writer.writerow(['103','Kesab','Babu','H/W'])
+    return response
+
+Step - 4 :  urls.py
+'''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('csv/', views.getfile),
+]
+

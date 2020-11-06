@@ -1,0 +1,430 @@
+Django Validate Example     (Ex: Builtin_Validator)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''
+--------------------Step 1 -------------------------------------------
+WebApp   (forms.py)
+'''''''''''''''''''''''''''''''''''''''''
+from django import forms
+
+class FeedbackForm(forms.Form):
+    Name=forms.CharField()
+    Subject=forms.CharField()
+    Rating=forms.IntegerField()
+
+MyFile.css
+''''''''''''''''''
+body{
+background-image:url("/static/images/tech.jpg");
+background-repeat:no-repeat;
+background-size:cover;
+}
+
+h1{
+font-color:red;
+font-size:20px;
+font-family:arial;
+}
+
+feed.html
+''''''''''''''''''''
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Validation</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/MyFile.css' %}">
+</head>
+<body>
+<h1 align="center">Feedback General Form...!!</h1>
+<div class="container" align="center">
+    <form method="POST">
+        {{ form.as_p }}
+        {% csrf_token %}
+        <input type="submit" value="Register" class="btn btn-success">
+    </form>
+</div>
+</body>
+</html>
+
+views.py
+'''''''''''''''''''
+from django.shortcuts import render
+from WebApp import forms
+
+# Create your views here.
+def FeedbackView(request):
+    form=forms.FeedbackForm()
+    if request.method=='POST':
+        form=form.FeedbackForm(request.POST)
+        if form.is_valid():
+            print("Feedback Form is Under Process...")
+            print (form.cleaned_data['Name'])
+            print (form.cleaned_data['Subject'])
+            print (form.cleaned_data['Rating'])
+    return render(request,'MyApp/feed.html',{'form':form})
+
+urls.py
+'''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('register/', views.FeedbackView ),
+]
+
+Run this in the server     http://127.0.0.1:8000/register
+
+------------ Step 2 -------------------------------------
+
+make some changes
+create another html file 
+
+Thanks.html
+'''''''''''''''''''''''''
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanks for click...</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/MyFile.css' %}">
+</head>
+<body>
+<h1 align="center">Thanks for Submit all required Fields...</h1>
+<h2>Good Bye...Thank You All.....!!!!</h2>
+</body>
+</html>
+
+views.py    (make some changes)
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+from django.shortcuts import render
+from WebApp import forms
+from django.http import HttpResponseRedirect
+
+# Create your views here.
+def ThankView(request):
+    return render(request,'MyApp/Thanks.html')
+
+def FeedbackView(request):
+    if request.method=='POST':
+        form=forms.FeedbackForm(request.POST)
+        if form.is_valid():
+            print("Feedback Form is Under Process...")
+            print (form.cleaned_data['Name'])
+            print (form.cleaned_data['Subject'])
+            print (form.cleaned_data['Rating'])
+            return HttpResponseRedirect('/Bye')
+    else:
+        form=forms.FeedbackForm()
+    return render(request,'MyApp/feed.html',{'form':form})
+
+urls.py
+''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('register/', views.FeedbackView ),
+    path('Bye/', views.ThankView),
+]
+
+Again Run this in the server     http://127.0.0.1:8000/register
+
+================================================================================
+Django Custom Validation    (Ex : Builtin_Validate)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''
+Only change this forms.py in WebApp......others are same
+
+forms.py
+'''''''''''''''''''''
+from django import forms
+from django.core import validators
+
+def Begin_With_S(value):
+    if value[0]!="S":
+        raise forms.ValidationError("Sorry First Char Must be S")
+    def Alpha(value):
+        if value.isalpha()!=True:
+            raise forms.ValidationError("Yes Every Char Must be Alphabet")
+#customized forms
+class EmpForm(forms.Form):
+    Name=forms.CharField(validators=[Begin_With_S])
+    Salary=forms.IntegerField()
+    Opinion=forms.CharField(widget=forms.Textarea,validators=[validators.MaxLengthValidator(40),validators.MinLengthValidator(10)])
+
+
+views.py
+'''''''''''''''
+from django.shortcuts import render
+from WebApp import forms
+from django.http import HttpResponseRedirect
+
+# Create your views here.
+def ThankView(request):
+    return render(request,'MyFile/Thanks.html')
+
+def EmpView(request):
+    if request.method=='POST':
+        form=forms.EmpForm(request.POST)
+        if form.is_valid():
+            print("Emp Form is Under Process...")
+            print (form.cleaned_data['Name'])
+            print (form.cleaned_data['Salary'])
+            return HttpResponseRedirect('/Bye')
+    else:
+        form=forms.EmpForm()
+    return render(request,'MyFile/Welcome.html',{'form':form})
+
+===============================================================================
+Django Validation using Clean Method
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+forms.py
+'''''''''''''''''''
+from django import forms
+
+#customized forms
+class EmpForm(forms.Form):
+    Name=forms.CharField()
+    Salary=forms.IntegerField()
+
+    def clean(self):
+        print ("Total Form Validation")
+        total_cleaned_data=super().clean()
+
+        inputname=total_cleaned_data['Name']
+        if len(inputname)<10:
+            raise forms.ValidationError("Name Must be min 10 Chars")
+
+        inputSal=total_cleaned_data['Salary']
+        if inputSal==0:
+            raise forms.ValidationError('Salary Must be > 0')
+
+
+views.py
+''''''''''''''''''''''
+from django.shortcuts import render
+from WebApp import forms
+from django.http import HttpResponseRedirect
+
+# Create your views here.
+def ThankView(request):
+    return render(request,'MyFile/Thanks.html')
+
+def EmpView(request):
+    if request.method=='POST':
+        form=forms.EmpForm(request.POST)
+        if form.is_valid():
+            print("Emp Form is Under Process...")
+            print (form.cleaned_data['Name'])
+            print (form.cleaned_data['Salary'])
+            return HttpResponseRedirect('/Bye')
+    else:
+        form=forms.EmpForm()
+    return render(request,'MyFile/Welcome.html',{'form':form})
+
+===============================================================================
+Real Time Validators in Django
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+even number check
+'''''''''''''''''''''''''''''''''''''''''''''
+forms.py
+'''''''''''''''''''''
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as_
+
+def validate_even(value):
+    if value % 2!=0:
+        raise ValidationError(_('%(value)s is not an even number'),params={'value':value},)
+
+models.py
+''''''''''''''''''''''
+from django.db import models
+
+# Create your models here.
+class MyModel(models.Model):
+    even_field=models.IntegerField(validators=[validate_even])
+
+or----------------------
+
+from django import forms
+class MyForm(forms.Form):
+    even_field=forms.IntegerField(validators=[validate_even])
+
+=================================================================================
+Registration Form
+''''''''''''''''''''''''''''''''''''''''''''
+forms.py
+''''''''''''''''''
+from django import forms
+from django.core import validators
+
+#customized forms
+class Registrationform(forms.Form):
+    username=forms.CharField(max_length=15, label='User Name')
+    firstname=forms.CharField(max_length=15, label='FirstName')
+    lastname=forms.CharField(max_length=15, label='LastName')
+    email=forms.EmailField(required=True)
+    password=forms.CharField(widget=forms.PasswordInput,label="Password")
+    passwordagain=forms.CharField(widget=forms.PasswordInput,label="Password Conformation")
+    opinion=forms.CharField(widget=forms.Textarea)
+
+views.py
+'''''''''''''''''''
+from django.shortcuts import render
+from WebApp import forms
+from django.http import HttpResponseRedirect
+
+# Create your views here.
+def ThankView(request):
+    return render(request,'MyFile/Thanks.html')
+
+def RegView(request):
+    if request.method=='POST':
+        form=forms.Registrationform(request.POST)
+        if form.is_valid():
+            print("Registration Form is Under Process...")
+            print (form.cleaned_data['username'])
+            print (form.cleaned_data['firstname'])
+            print (form.cleaned_data['lastname'])
+            print (form.cleaned_data['email'])
+            print (form.cleaned_data['password'])
+            print (form.cleaned_data['passwordagain'])
+            print (form.cleaned_data['opinion'])
+            return HttpResponseRedirect('/Bye')
+    else:
+        form=forms.Registrationform()
+    return render(request,'MyFile/Welcome.html',{'form':form})
+
+urls.py
+'''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('login/', views.RegView),
+    path('Bye/', views.ThankView),
+]
+
+=================================================================================
+         BOT		(all are same like previous. only change in forms.py)
+''''''''''''''''''''''''''''''''	''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+MyFile.css
+''''''''''''''''''''''
+body{
+background-image:url("/static/images/tech1.jpg");
+background-repeat:no-repeat;
+background-size:cover;
+}
+
+h1{
+font-color:red;
+font-size:20px;
+font-family:arial;
+}
+
+Welcome.html
+'''''''''''''''''''''''''''''
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django InBuilt Validators</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/MyFile.css' %}">
+</head>
+<body>
+<h1 align="center">Django Inbuilt EmpForm...!!</h1>
+<div class="container" align="center">
+    <form method="POST">
+        {{ form.as_p }}
+        {% csrf_token %}
+        <input type="submit" value="Login" class="btn btn-success">
+    </form>
+</div>
+</body>
+</html>
+
+forms.py   (WebApp)
+'''''''''''''''''''''''''''''''''''''''''''
+from django import forms
+class EmpForm(forms.Form):
+    Name=forms.CharField()
+    Salary=forms.IntegerField()
+    Opinion=forms.CharField(widget=forms.Textarea)
+    Bot_Field=forms.CharField(required=False,widget=forms.HiddenInput)
+
+    def clean(self):
+        print ("Welcome to Robot Validation")
+        cdata=super().clean()
+        bhandel=cdata['Bot_Field']
+        if len(bhandel)>0:
+            raise forms.ValidationError("Welcome BOT, your data is unable to proceed")
+
+views.py
+'''''''''''''''''
+from django.shortcuts import render
+from WebApp import forms
+from django.http import HttpResponseRedirect
+
+# Create your views here.
+def ThankView(request):
+    return render(request,'MyFile/Thanks.html')
+
+def EmpView(request):
+    if request.method=='POST':
+        form=forms.EmpForm(request.POST)
+        if form.is_valid():
+            print("Emp Form is Under Process...")
+            print (form.cleaned_data['Name'])
+            print (form.cleaned_data['Salary'])
+            print (form.cleaned_data['Opinion'])
+            return HttpResponseRedirect('/Bye')
+    else:
+        form=forms.EmpForm()
+    return render(request,'MyFile/Welcome.html',{'form':form})
+
+Thanks.html
+'''''''''''''''''''''''''''''''
+<!DOCTYPE html>
+{% load staticfiles %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Thanks for click...</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/MyFile.css' %}">
+</head>
+<body>
+<h2 align="center">Thanks for Submit all required Fields for Builtin Validator...</h2>
+<h2>Thank You All.....!!!!</h2>
+</body>
+</html>
+
+urls.py
+'''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('login/', views.EmpView),
+    path('Bye/', views.ThankView),
+]
+
+
+Run in the server 127.0.0.1:8000/login
+
+then go to inspect page or press F12 and  go to
+<input type="hidden" name="Bot_Field" value="boterror" id="id_Bot_Field">
+right click and add attribute. mention value="anyname"
+then run again
+ 
+====================================================================================

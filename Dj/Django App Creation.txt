@@ -1,0 +1,949 @@
+1 @ Example (URLs and Views)
+-----------------------------------------
+
+Step-1 (views.py)
+'''''''''''''''''''''''''''''''''''
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+def Home_page(request):
+    return HttpResponse("Hei Welcome to Python Django World")
+
+Step-2 (urls.py)
+'''''''''''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('home/',views.Home_page),
+]    
+
+Step-3 (run the server)
+''''''''''''''''''''''''''''''''''''''''''''
+python manage.py runserver
+
+Step-4 (open in Browser)
+''''''''''''''''''''''''''''''''''''''''''''''''''
+127.0.0.1:8000/home/
+
+
+2 @ Examples (HTML tags and CSS properties)
+-----------------------------------------------------------------
+Step-1 (views.py)
+''''''''''''''''''''''''''''''''''
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+def Home_page(request):
+    return HttpResponse("Hei Welcome to Python Django World")
+def SuccessPage(request):
+    return HttpResponse("<h1 style='color:blue;font-family:elephant;font-size:50px'>Welcome to Success Page</h1>")
+
+Step-2 (urls.py)
+'''''''''''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('home/',views.Home_page),
+    path('success/',views.SuccessPage),
+]
+
+Step-3 (run the server)
+'''''''''''''''''''''''''''''''''''''''''''''
+python manage.py runserver
+
+Step-4 (open in Browser)
+''''''''''''''''''''''''''''''''''''''''''''''''
+127.0.0.1:8000/success/
+
+3 @ Example (passing int value)
+--------------------------------------------------
+Step-1 (views.py)
+''''''''''''''''''''''''''''''''''
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+def Home_page(request,id):
+    return HttpResponse(f"Hei Welcome to Python Django World-{id}")
+def SuccessPage(request):
+    return HttpResponse("<h1 style='color:blue;font-family:elephant;font-size:50px'>Welcome to Success Page</h1>")
+def Index(request):
+    return HttpResponse("<h1>Welcome to Django Class</h1>")
+
+Step-2 (urls.py)
+'''''''''''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('home/<int:id>/',views.Home_page),
+    path('success/',views.SuccessPage),
+    path('index/',views.Index),
+]
+
+Step-3 (run the server)
+'''''''''''''''''''''''''''''''''''''''''''''
+python manage.py runserver
+
+Step-4 (open in Browser)
+''''''''''''''''''''''''''''''''''''''''''''''''
+127.0.0.1:8000/home/1
+127.0.0.1:8000/index/
+
+
+4 @ Example (passing without int value)
+--------------------------------------------------
+Step-1 (views.py)
+''''''''''''''''''''''''''''''''''
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+def Home_page(request):
+    return HttpResponse("Hei Welcome to Python Django World")
+def SuccessPage(request):
+    return HttpResponse("<h1 style='color:blue;font-family:elephant;font-size:50px'>Welcome to Success Page</h1>")
+def Index(request):
+    return HttpResponse("<h1>Welcome to Django Class</h1>")
+
+Step-2 (urls.py)
+''''''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('',views.Home_page),
+    path('success/',views.SuccessPage),
+    path('index/',views.Index),
+]
+
+Step-3 (run the server)
+'''''''''''''''''''''''''''''''''''''''''''''
+python manage.py runserver
+
+Step-4 (open in Browser)
+''''''''''''''''''''''''''''''''''''''''''''''''
+127.0.0.1:8000/home/
+127.0.0.1:8000/index/
+
+
+5 @ Example (name attribute)
+--------------------------------------------------
+Step-1 (views.py)
+''''''''''''''''''''''''''''''''''
+from django.shortcuts import render
+from django.http import HttpResponse,HttpResponseRedirect
+from django.urls import reverse
+
+# Create your views here.
+def Home(request):
+    return HttpResponse("<a href='hi'>Hello Pythonista</a>")
+def MyView(request):
+    return HttpResponseRedirect(reverse('bye'))
+def ByeView(request):
+    return HttpResponse("Good Bye Django")
+
+Step-2 (urls.py)
+''''''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('home/',views.Home,name='home'),
+    path('hi/',views.MyView,name='hi'),
+    path('bye/',views.ByeView,name='bye'),
+]
+
+Step-3 (run the server)
+'''''''''''''''''''''''''''''''''''''''''''''
+python manage.py runserver
+
+Step-4 (open in Browser)
+''''''''''''''''''''''''''''''''''''''''''''''''
+127.0.0.1:8000/home/
+127.0.0.1:8000/hi/
+
+
+6 @ Example (kwargs attribute)
+------------------------------------------------
+Step-1 (views.py)
+'''''''''''''''''''''''''''''
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+def MyView(request,val1,val2):
+    Msg=val1+""+val2+"Home Page"
+    return HttpResponse(Msg)
+
+Step-2 (urls.py)
+'''''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('home/',views.MyView,{'val1':'Hey','val2':'Welcome To'},name='home'),
+]
+
+Step-3 (run the server)
+'''''''''''''''''''''''''''''''''''''''''''''
+python manage.py runserver
+
+Step-4 (open in Browser)
+''''''''''''''''''''''''''''''''''''''''''''''''
+127.0.0.1:8000/home/
+
+
+7 @ Example ( re_path() )
+-----------------------------------------
+Step-1 views.py
+'''''''''''''''''''''''''''
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+def Home_Page(request):
+    return HttpResponse("Welcome to Home Page")
+def Index_Page(request):
+    return HttpResponse("Welcome to Index Page")
+
+Step-2 urls.py
+'''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path,re_path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/',admin.site.urls),
+    re_path(r'^home/$',views.Home_Page),
+    re_path(r'^index/$', views.Index_Page),
+]
+
+Step-3 (run the server)
+'''''''''''''''''''''''''''''''''''''''''''''
+python manage.py runserver
+
+Step-4 (open in Browser)
+''''''''''''''''''''''''''''''''''''''''''''''''
+127.0.0.1:8000/home/
+
+8 @ Example ( Using Python Regular Expression)
+---------------------------------------------------------------------------
+Step-1 views.py
+''''''''''''''''''''''''''''
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+def Home_Page(request):
+    return HttpResponse("Welcome to Home Page of Django")
+def Index_Page(request,year):
+    return HttpResponse(f"Welcome to Index Year page {year}")
+
+Strep-2 urls.py
+'''''''''''''''''''''''''
+from django.contrib import admin
+from django.urls import path,re_path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/',admin.site.urls),
+    re_path(r'^home/$',views.Home_Page),
+    re_path(r'^index/(?P<year>[0-9]{4})/$',views.Index_Page),
+]
+
+Step-3 (run the server)
+''''''''''''''''''''''''''''''''''''''
+python manage.py runserver
+
+Step-4 (open in Browser)
+''''''''''''''''''''''''''''''''''''''''''''''''
+127.0.0.1:8000/home/
+127.0.0.1:8000/index/1999
+ 
+8 @ Example (include() )
+------------------------------------------------
+views.py
+'''''''''''''''
+from django.shortcuts import render
+from django.http import HttpResponse
+
+# Create your views here.
+def Home_Page(request):
+    return HttpResponse("Welcome to Home Page of Django")
+def Index(request):
+    return HttpResponse("Welcome to Index Year page")
+
+urls.py
+'''''''''''
+from django.urls import path,include
+
+urlpatterns = [
+    path('WebApp/',include('WebApp.urls')),
+]
+
+urls.py   (create this in WebApp app)
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+from django.urls import path,include
+
+urlpatterns = [
+    path('WebApp/',include('WebApp.urls')),
+]
+
+step-4
+'''''''''''''''''
+127.0.0.1:8000/WebApp/Index/
+============================================================================================
+Django Template Configuration
+============================================================================================
+Do the following updates in the settings.py and run in cmd.
+Step -1
+''''''''''''''
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+print(__file__)
+
+	Run in cmd by creating ds...
+E:\DjangoProjects\Science>cd Science
+E:\DjangoProjects\Science\Science>dir
+. . . . . . .xxxxxxxxxxxxx. . . . . . . . . . . 
+E:\DjangoProjects\Science\Science>py settings.py
+settings.py
+
+Step-2
+'''''''''''
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+print(os.path.abspath(__file__))
+
+	Run in cmd by creating ds...
+E:\DjangoProjects\Science\Science>py settings.py
+E:\DjangoProjects\Science\Science\settings.py
+
+Step-3
+'''''''''''
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+print(BASE_DIR)
+
+	Run in cmd by creating ds...
+E:\DjangoProjects\Science\Science>py settings.py
+E:\DjangoProjects\Science
+
+--------------------------------------------------------
+create a 'templates' folder inside the main project folder. Inside that create a separate folder to hold templates. Create a html file here and add some of CSS properties  in that .......
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Science Templates</title>
+<style type="text/css">
+    h1{
+    color:red;font-size:30px;
+    }
+</style>
+</head>
+<body>
+<h1>Welcome to Science Template page</h1>
+</body>
+</html>
+
+views.py
+'''''''''''''''
+from django.shortcuts import render
+
+# Create your views here.
+def Template_View(request):
+    return render(request,'MyApp/Physics.html')
+
+urls.py
+''''''''''''
+from django.contrib import admin
+from django.urls import path
+from PCM import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('Temp/',views.Template_View),
+]
+
+Step-1 settings.py  (Assigning Template Variable)
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+import os
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR=os.path.join(BASE_DIR,'templates')
+
+Add these in below.............
+'''''''''''''''''''''''''''''''
+INSTALLED_APPS = [
+    . . . . . . .
+    . . . . . . . 
+    #User Defined Apps
+    'PCM'
+]
+
+Step-2   (specify this TEMPLATE_DIR in settings.py)
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+TEMPLATES = [
+    {
+        . . . . . .  
+        'DIRS': [TEMPLATE_DIR,],
+     },]
+
+
+Step-3 
+'''''''''''''
+py manage.py runserver   
+
+Step-4
+''''''''''''
+127.0.0.1:8000/Temp/
+
+=================================================================================================
+Example of TEMPLATE
+-------------------------------------------------
+Step-1
+'''''''''''''''
+E:\>cd DjangoProjects
+E:\DjangoProjects>django-admin startproject Template_Project
+E:\DjangoProjects>cd Template_Project
+E:\DjangoProjects\Template_Project>django-admin startapp WebApp
+E:\DjangoProjects\Template_Project>py manage.py runserver
+
+Do required settings, configure the app, templates folder creation and do settings.
+
+Step-2    settings.py
+''''''''''''''''''''''''''''''''
+Step-1 settings.py  (Assigning Template Variable)
+import os
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR=os.path.join(BASE_DIR,'templates')
+
+Add these in below.............
+'''''''''''''''''''''''''''''''
+INSTALLED_APPS = [
+    . . . . . . .
+    . . . . . . . 
+    #User Defined Apps
+    'WebApp'
+]
+
+Step-2   (specify this TEMPLATE_DIR in settings.py)
+TEMPLATES = [
+    {
+        . . . . . .  
+        'DIRS': [TEMPLATE_DIR,],
+     },]
+
+
+Step-3   Creating Welcome.html file 
+'''''''''''''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Templates..!!</title>
+</head>
+<body>
+<table>
+    <tr>
+        <th>StdNo</th>
+        <th>StdName</th>
+        <th>Result</th>
+    </tr>
+    <tr>
+        <td>101</td>
+        <td>Raaj</td>
+        <td>Pass</td>
+    </tr>
+</table>
+</body>
+</html>
+
+Step-4  Creating GoodBye.html
+''''''''''''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GoodBye..!!</title>
+</head>
+<body>
+<h1>Thank you for visiting our Page..!!</h1>
+</body>
+</html>
+
+Step-5  views.py
+'''''''''''''
+from django.shortcuts import render
+
+# Create your views here.
+def Welcome_Page(request):
+    return render(request,'MyApp/Welcome.html')
+def GoodBye_Page(request):
+    return render(request,'MyApp/GoodBye.html')
+
+Step-6   urls.py
+''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('wish/',views.Welcome_Page),
+    path('bye/',views.GoodBye_Page)
+]
+
+Step-7
+'''''''''''''
+py manage.py runserver
+
+Step-8
+'''''''''''
+127.0.0.1:8000/wish/
+127.0.0.1:8000/bye/
+
+==================================================================================================
+Django Template Language
+--------------------------------------------------
+Example 1
+============
+Step-1
+'''''''''''''''
+E:\>cd DjangoProjects
+E:\DjangoProjects>django-admin startproject DTL_Jinja
+E:\DjangoProjects>cd DTL_Jinja
+E:\DjangoProjects\DTL_Jinja>django-admin startapp WebApp
+E:\DjangoProjects\DTL_Jinja>py manage.py runserver
+
+Do required settings, configure the app, templates folder creation and do settings.
+
+Step-2    settings.py
+''''''''''''''''''''''''''''''''
+Step-1 settings.py  (Assigning Template Variable)
+import os
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR=os.path.join(BASE_DIR,'templates')
+
+Add these in below.............
+'''''''''''''''''''''''''''''''
+INSTALLED_APPS = [
+    . . . . . . .
+    . . . . . . . 
+    #User Defined Apps
+    'WebApp'
+]
+
+Step-2   (specify this TEMPLATE_DIR in settings.py)
+TEMPLATES = [
+    {
+        . . . . . .  
+        'DIRS': [TEMPLATE_DIR,],
+     },]
+
+
+Step-3   Creating Welcome.html file 
+'''''''''''''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Templete Language..!</title>
+</head>
+<body>
+<h3>{{dt_now}}</h3>
+</body>
+</html>
+
+Step-4   views.py
+''''''''''''
+from django.shortcuts import render
+import datetime
+
+# Create your views here.
+def DateView(request):
+    date=datetime.datetime.now()
+    dic={'dt_now':date}
+    return render(request,'MyApp/Welcome.html',context=dic)
+
+Step-5   urls.py
+'''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('dt/',views.DateView),
+]
+
+Step-6
+'''''''''''''
+py manage.py runserver
+
+Step-7
+'''''''''''
+127.0.0.1:8000/dt/
+
+==================================================================================================
+Example 2 (Template Language)
+=========''''''''''''''''''''''''''''''''''''
+Do required settings, configure the app, templates folder creation and do settings.
+
+settings.py
+'''''''''''''''''''
+Step-1 settings.py  (Assigning Template Variable)
+import os
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR=os.path.join(BASE_DIR,'templates')
+
+Add these in below....
+'''''''''''''''''''''''''''''''''''''''''
+INSTALLED_APPS = [
+    . . . . . . .
+    . . . . . . . 
+    #User Defined Apps
+    'Template_App'
+]
+
+Step-2   (specify this TEMPLATE_DIR in settings.py)
+TEMPLATES = [
+    {
+        . . . . . .  
+        'DIRS': [TEMPLATE_DIR,],
+     },]
+
+test.html
+'''''''''''''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Temp Lang</title>
+</head>
+<body>
+<h1>{{dt_now}}</h1>
+<h2>{{name}}</h2>
+</body>
+</html>
+
+views.py
+''''''''''''''
+from django.shortcuts import render
+import datetime
+
+# Create your views here.
+def dateInfo(request):
+    date=datetime.datetime.now()
+    name='Akash Kumar'
+    my_dict={'dt_now':date,'name':name}
+    return render(request,'MyApp/test.html',context=my_dict)
+
+urls.py
+'''''''''''
+from django.contrib import admin
+from django.urls import path
+from Template_App import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('date/',views.dateInfo),
+]
+
+
+==================================================================================================
+Example 3  (A Script to wish the customer as per TimeZone)
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+Do required settings, configure the app, templates folder creation and do settings.
+
+settings.py
+'''''''''''''''''''
+Step-1 settings.py  (Assigning Template Variable)
+import os
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+TEMPLATE_DIR=os.path.join(BASE_DIR,'templates')
+
+Add these in below....
+'''''''''''''''''''''''''''''''''''''''''
+INSTALLED_APPS = [
+    . . . . . . .
+    . . . . . . . 
+    #User Defined Apps
+    'Template_App'
+]
+
+Step-2   (specify this TEMPLATE_DIR in settings.py)
+TEMPLATES = [
+    {
+        . . . . . .  
+        'DIRS': [TEMPLATE_DIR,],
+     },]
+
+test.html
+'''''''''''''
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Django Temp Lang</title>
+</head>
+<body>
+<h1>{{dt_now}}</h1>
+<h2>{{name}}</h2>
+<h3>{{txt}}</h3>
+</body>
+</html>
+
+
+views.py
+''''''''''''''
+from django.shortcuts import render
+import datetime
+
+# Create your views here.
+def dateInfo(request):
+    date=datetime.datetime.now()
+    name='Hey PYTHONISTAS'
+    th=int(date.strftime('%H'))
+    if th<12:
+        txt="Good Morning Guys"
+    elif th<16:
+        txt="Afternoon Dudes"
+    else:
+        txt="Good Night Istas"
+    my_dict={'dt_now':date,'name':name,'txt':txt}
+    return render(request,'MyApp/test.html',context=my_dict)
+
+urls.py
+'''''''''''
+from django.contrib import admin
+from django.urls import path
+from Template_App import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('date/',views.dateInfo),
+]
+
+=============================================================================================
+Django Static File
+''''''''''''''''''''''''''''''''''
+-create a 'static' folder inside the root folder
+-inside static create a 'css' and a 'images' folder.
+-keep a css file inside that css folder.
+   e.g.   style.css
+h1{
+color:red;
+font-size:40px;
+}
+h2{
+color:blue;
+font-size:35px;
+}
+-keep a image inside the image folder.
+
+configure static file to Django framework
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+- To include image in HTML file write this syntax
+<img src="{%static 'images/django.png'%}">
+- To include css in HTML file write this syntax
+<link href="{%static 'css/style.css'%}" rel="stylesheet">
+- At beginning of HTML file we have to write following text after <!DOCTYPE html>
+<!DOCTYPE html>
+{%load staticfiles%}
+
+create a html file  (test.html)
+''''''''''''''''''''''''''''''''''''''''''''
+<!DOCTYPE html>
+{%load staticfiles%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Static File</title>
+    <link href="{%static 'css/style.css'%}" rel="stylesheet">
+</head>
+<body>
+<marquee>
+    <img src="{%static 'images/django.png'%}" width="700px" height="400px">
+</marquee>
+<h1>It is a Static file containing css, html, images inside it</h1>
+<h1>{{dt_now}}</h1>
+<h2>{{name}}</h2>
+<h3>{{txt}}</h3>
+</body>
+</html>
+
+settings.py
+'''''''''''''''''''
+1.
+import os
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_DIR=os.path.join(BASE_DIR,'static')
+
+2.
+INSTALLED_APPS = [
+    'Static_App'
+]
+
+3.
+TEMPLATES = [
+    {
+          'DIRS': [STATIC_DIR,],
+          }]
+4.
+STATIC_URL = '/static/'
+STATICFILES_DIRS=[
+    STATIC_DIR,
+]
+
+views.py
+''''''''''''''''''
+from django.shortcuts import render
+from datetime import datetime
+
+# Create your views here.
+def dateInfo(request):
+    date=datetime.now()
+    name='Akash Kumar'
+    th=int(date.strftime('%H'))
+    if th<12:
+        txt="Good Morning Guys"
+    elif th<16:
+        txt="Afternoon Dudes"
+    else:
+        txt="Good Night Istas"
+    my_dict={'dt_now':date,'name':name,'txt':txt}
+    return render(request,'test.html',context=my_dict)
+
+urls.py
+'''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from Static_App import views
+
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('date/',views.dateInfo),
+]
+
+==============================================================================================
+Example:
+''''''''''''''''''''''''''''''''''''
+settings.py
+'''''''''''''''''''
+1.
+import os
+
+# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+STATIC_DIR=os.path.join(BASE_DIR,'static')
+
+2.
+INSTALLED_APPS = [
+    'WebApp'
+]
+
+3.
+TEMPLATES = [
+    {
+          'DIRS': [STATIC_DIR,],
+          }]
+4.
+STATIC_URL = '/static/'
+STATICFILES_DIRS=[
+    STATIC_DIR,
+]
+
+
+test.html
+''''''''''''''
+<!DOCTYPE html>
+{%load staticfiles%}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Static Page</title>
+    <link href="{%static 'css/style.css'%}" rel="stylesheet">
+</head>
+<body>
+<marquee scrollamount="20" onmouseover="this.stop()" onmouseout="this.start()">
+<img src="{%static 'image/django.png'%}" alt="Sorry No Image">
+<img src="{%static 'image/python.jpg'%}" alt="Sorry No Image">
+</marquee>
+<h2>{{txt}}</h2>
+<h2>{{name}}</h2>
+<h2>Current Date and Time is : {{dt_now}}</h2>
+
+</body>
+</html>
+
+style.css
+'''''''''''''''''
+img{
+height:35%;
+width:30%;
+border:10px green dashed;
+margin:0% 5%;
+}
+
+h2{
+color:blue;
+text-align:right;
+text-decoration:underline;
+}
+
+views.py
+''''''''''''''''
+from django.shortcuts import render
+from datetime import datetime
+
+# Create your views here.
+def dateInfo(request):
+    date=datetime.now()
+    name='Akash Kumar'
+    th=int(date.strftime('%H'))
+    if th<12:
+        txt="Good Morning Guys"
+    elif th<16:
+        txt="Afternoon Dudes"
+    else:
+        txt="Good Night Istas"
+    my_dict={'dt_now':date,'name':name,'txt':txt}
+    return render(request,'test.html',context=my_dict)
+
+urls.py
+''''''''''''''
+from django.contrib import admin
+from django.urls import path
+from WebApp import views
+urlpatterns = [
+    path('admin/', admin.site.urls),
+    path('date/',views.dateInfo),
+]
+
+==============================================================================================
